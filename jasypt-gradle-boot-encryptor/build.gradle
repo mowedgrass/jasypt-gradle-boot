@@ -1,0 +1,118 @@
+buildscript {
+    repositories {
+        maven { url 'http://repo.spring.io/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'propdeps'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+mainClassName = ''
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    provided 'org.springframework.boot:spring-boot-starter:1.2.7.RELEASE'
+
+    compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:1.2'
+
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.5',
+            'org.spockframework:spock-core:1.0-groovy-2.4',
+            'cglib:cglib-nodep:3.2.0',
+            'org.objenesis:objenesis:2.2'
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment ->
+                signing.signPom(deployment)
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.withXml {
+                (asNode().dependencies).forEach {
+                    it.children().removeAll { it.scope.text() != 'compile' }
+                }
+            }
+
+            pom.project {
+                name "${project.group}:${project.name}"
+                packaging 'jar'
+                description 'Shared jasypt encryptor for jasypt-gradle-boot-plugin'
+                url 'https://github.com/mowedgrass/jasypt-gradle-boot'
+
+                scm {
+                    connection 'scm:git:git://github.com/mowedgrass/jasypt-gradle-boot.git'
+                    developerConnection 'scm:git:git@github.com:mowedgrass/jasypt-gradle-boot.git'
+                    url 'https://github.com/mowedgrass/jasypt-gradle-boot'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name 'mowedgrass'
+                        email 'the.mowed.grass@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+uploadArchives.dependsOn build
+
+[distZip, distTar].each { task ->
+    configurations.archives.artifacts.removeAll
+            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
+    task.enabled = false
+}
+
+signing {
+    sign configurations.archives
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.7'
+}
+
