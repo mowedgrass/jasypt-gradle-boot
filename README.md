@@ -78,7 +78,7 @@ will be decrypted to:
 ```properties
 app.secret=to-be-encrypted
 ```
-or (if **-tag** parameter is provided) to:
+or (if **--tag** parameter is provided) to:
 ```properties
 app.secret=ENCRYPT(to-be-encrypted)
 ```
@@ -93,36 +93,36 @@ During decryption the original file will be backed up to \<file\>.bak. You will 
 
 Plugin and runtime decryptor uses the first available password source:
 
-1. standard jasypt password property: `jasypt.encryptor.password`
-2. abbreviation of the above: `jasypt.password`
-3. system environment variable: `JASYPT_ENCRYPTOR_PASSWORD`
-4. abbreviation of the above: `JASYPT_PASSWORD`
+* standard jasypt password property: `jasypt.encryptor.password`
+* abbreviation of the above: `jasypt.password`
+* system environment variable: `JASYPT_ENCRYPTOR_PASSWORD`
+* abbreviation of the above: `JASYPT_PASSWORD`
 
 There are several ways to pass the password:
 * to jar
-    1. as an argument:
+    * as an argument:
     ```bash
         java -jar <app.jar> --jasypt.password=<password>
     ```
 
-    2. as a property:
+    * as a property:
     ```bash
         java -Djasypt.password=<password> -jar <app.jar>
     ```
 
-    3. as a system environment property:
+    * as a system environment property:
     ```bash
         JASYPT_PASSWORD=<password>
         java -jar <app.jar>
     ```
 
 * to gradle task
-    1. as a property:
+    * as a property:
     ```
         ./gradlew bootRun -Djasypt.password=<password>
     ```
 
-    2. as a system environment property:
+    * as a system environment property:
     ```bash
         JASYPT_PASSWORD=<password>
         ./gradlew bootRun
