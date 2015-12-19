@@ -1,38 +1,54 @@
-buildscript {
-    repositories {
-        maven { url 'http://repo.spring.io/plugins-release' }
-    }
-    dependencies {
-        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
-    }
-}
-
 apply plugin: 'groovy'
 apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'idea'
-apply plugin: 'propdeps'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-mainClassName = ''
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    provided 'org.springframework.boot:spring-boot-starter:1.2.7.RELEASE'
+    compile gradleApi()
 
-    compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:1.2'
+    compile 'org.springframework.boot:spring-boot-starter:1.3.0.RELEASE'
+    compile 'com.github.mowedgrass:jasypt-gradle-boot-encryptor:0.1.32'
 
-    testCompile 'org.codehaus.groovy:groovy-all:2.4.5',
-            'org.spockframework:spock-core:1.0-groovy-2.4',
-            'cglib:cglib-nodep:3.2.0',
-            'org.objenesis:objenesis:2.2'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.3',
+                'cglib:cglib-nodep:3.2.0',
+                'org.objenesis:objenesis:2.2'
+}
+
+sourceSets {
+    integrationTest {
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integrationTest/groovy')
+        }
+        resources.srcDir file('src/integrationTest/resources')
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test
+
+tasks.withType(Test) {
+    reports.html.destination = file("${reporting.baseDir}/${name}")
 }
 
 task javadocJar(type: Jar) {
@@ -73,7 +89,7 @@ uploadArchives {
             pom.project {
                 name "${project.group}:${project.name}"
                 packaging 'jar'
-                description 'Shared jasypt encryptor for jasypt-gradle-boot-plugin'
+                description 'jasypt spring boot gradle plugin'
                 url 'https://github.com/mowedgrass/jasypt-gradle-boot'
 
                 scm {
@@ -101,12 +117,6 @@ uploadArchives {
 }
 
 uploadArchives.dependsOn build
-
-[distZip, distTar].each { task ->
-    configurations.archives.artifacts.removeAll
-            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
-    task.enabled = false
-}
 
 signing {
     sign configurations.archives

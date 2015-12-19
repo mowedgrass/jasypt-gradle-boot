@@ -1,6 +1,7 @@
 /build
 **/build
 **/gradle.properties.local
+*.bak
 
 # gradle specific
 .gradle
