@@ -47,7 +47,7 @@ For all plugin's tasks password can be provided as a command line parameter or a
 ./gradlew encryptProperties [--password <password>] [--confirm]
 ```
 
-Parses property files (*.properties and *.yml) and encrypts properties marked with **ENCRYPT** tag.
+Parses property files (\*.properties and \*.yml) and encrypts properties marked with **ENCRYPT** tag.
 For example property `app.secret` with value `to-be-encrypted` marked as:
 ```properties
 app.secret=ENCRYPT(to-be-encrypted)
@@ -69,7 +69,7 @@ During encryption the original file will be backed up to \<file\>.bak. You will 
 ./gradlew decryptProperties [--password <password>] [--tag] [--confirm]
 ```
 
-Parses property files (*.properties and *.yml) and decrypts properties marked with **ENC** tag.
+Parses property files (\*.properties and \*.yml) and decrypts properties marked with **ENC** tag.
 For example property `app.secret` with encrypted value marked as:
 ```properties
 app.secret=ENC(9ERJIetzDhJqIAdS6q7y9N5BtAJlq0KG)
