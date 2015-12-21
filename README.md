@@ -14,7 +14,7 @@ buildscript {
      mavenCentral()
  }
  dependencies {
-     classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE'
+     classpath 'com.github.mowedgrass:jasypt-gradle-boot-plugin:0.1.32'
  }
 }
 ```
