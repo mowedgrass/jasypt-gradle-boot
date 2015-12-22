@@ -14,12 +14,12 @@ buildscript {
      mavenCentral()
  }
  dependencies {
-     classpath 'com.github.mowedgrass:jasypt-gradle-boot-plugin:0.1.32'
+     classpath 'com.github.mowedgrass:jasypt-gradle-boot-plugin:0.1.33'
  }
 }
 ```
 
-Apply the plugin (_after java plugin!_):
+Apply the plugin:
 ```groovy
 apply plugin: 'encrypt'
 ```

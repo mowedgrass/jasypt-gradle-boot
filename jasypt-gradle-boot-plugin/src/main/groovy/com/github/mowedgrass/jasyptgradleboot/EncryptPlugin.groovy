@@ -10,6 +10,7 @@ import com.github.mowedgrass.jasyptgradleboot.task.text.DecryptTextTask
 import com.github.mowedgrass.jasyptgradleboot.task.text.EncryptTextTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 
 import static com.github.mowedgrass.jasyptgradleboot.password.PropertyPasswordProvider.PASSWORD_PROPERTY
 import static com.github.mowedgrass.jasyptgradleboot.password.PropertyPasswordProvider.SHORT_PASSWORD_PROPERTY
@@ -20,6 +21,8 @@ public class EncryptPlugin implements Plugin<Project> {
     public static final String[] DEPENDENT_TASKS = ['bootRun', 'integrationTest', 'test']
 
     public void apply(Project project) {
+        project.plugins.apply(JavaPlugin)
+
         configureTasks(project)
         configureProject(project)
     }
